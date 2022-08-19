@@ -12,21 +12,25 @@
 	<artifactId>trade-processor</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Trade Processor</name>
-	<description>A Web Flux processor exploring new technologies inspired by projects at CME Group </description>
+	<description>A Web Flux processor exploring new technologies inspired by projects at CME Group.</description>
 	<properties>
 		<java.version>11</java.version>
 		<testcontainers.version>1.17.3</testcontainers.version>
 	</properties>
 	<dependencies>
+		<!-- Spring dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>io.projectreactor.kafka</groupId>
+			<artifactId>reactor-kafka</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -41,6 +45,13 @@
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<!-- External dependencies -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
