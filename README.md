@@ -3,6 +3,6 @@ An app purely for experimenting with reactive Kafka and WebFlux, inspired by act
 
 ## Modules
 - Trade Processor - A Spring Web Flux Kafka message driven trade processor.
-- Trade Producer - Node.js based trade inject tool for publishing messages to Kafka.
+- Trade Producer - Node.js based trade injection tool for publishing messages to Kafka.
 
 
