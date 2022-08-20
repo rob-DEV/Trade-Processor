@@ -11,26 +11,32 @@ const kafka = new Kafka({client, brokers})
 const producer = kafka.producer()
 
 const produce = async () => {
+
+    // Read JSON trade data
+    const fs = require('fs')
+    const path = require('path')
+
+    const jsonPath = path.join(__dirname, '..', 'common', 'mock_trades.json')
+    const trade_data = JSON.parse(fs.readFileSync(jsonPath))
+    
     await producer.connect()
-    let i = 0
+    let index = 0
+    while(true) {
+        const randomTradeIndex = Math.floor(Math.random() * (trade_data.length))
+        const trade = trade_data[randomTradeIndex]
 
-    setInterval(async () => {
-       try {
-            await producer.send({
-                topic,
-                messages: [
-                    {
-                        key: String(i),
-                        value: "TRADE_DATA_{i}"                    }
-                ]
-            })
-
-            // console.log("Writes: " + i)
-            i++
-        } catch(err) {
-            console.error("Error producing message " + err)
-        }  
-    }, 1)
+        await producer.send({
+            topic,
+            messages: [
+                {
+                    key: String(index),
+                    value: JSON.stringify(trade)                
+                }
+            ]
+        })
+        index++;
+        console.log(index)
+    }
 }
 
 module.exports = produce
