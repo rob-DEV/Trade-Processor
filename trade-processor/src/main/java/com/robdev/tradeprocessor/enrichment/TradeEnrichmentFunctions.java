@@ -2,21 +2,18 @@ package com.robdev.tradeprocessor.enrichment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.robdev.tradeprocessor.util.CommonUtil;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.kafka.receiver.ReceiverRecord;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
+@Slf4j
 public class TradeEnrichmentFunctions {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public static Function<ReceiverRecord<String, String>, Trade> mapToTrade() {
+    public static Function<ConsumerRecord<String, String>, Trade> mapToTrade() {
         return data -> {
             try {
                 return objectMapper.readValue(data.value(), Trade.class);
@@ -38,7 +35,11 @@ public class TradeEnrichmentFunctions {
     }
 
     public static Function<Trade, Trade> enrichTradingInstrumentFromUnderlyingSource() {
-        return trade -> trade;
+        return trade -> {
+            log.info("THREAD ID {}", Thread.currentThread().getId());
+            trade.setTradeID((int)Thread.currentThread().getId());
+            return trade;
+        };
     }
 
     public static Function<Trade, List<Trade>> splitTradesToFlux() {
