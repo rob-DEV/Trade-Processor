@@ -1,5 +1,6 @@
 package com.robdev.tradeprocessor.util;
 
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class CommonUtil {

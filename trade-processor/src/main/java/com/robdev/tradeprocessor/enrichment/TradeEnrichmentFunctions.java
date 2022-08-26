@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.function.Function;
@@ -21,7 +23,6 @@ public class TradeEnrichmentFunctions {
                 throw new RuntimeException(e);
             }
         };
-//        return data -> CommonUtil.resultOrExcept((Supplier<Trade>) () -> objectMapper.readValue(data.value(),));
     }
 
     public static Function<Trade, String> mapToJson() {
@@ -43,6 +44,7 @@ public class TradeEnrichmentFunctions {
     }
 
     public static Function<Trade, List<Trade>> splitTradesToFlux() {
+        // Copy the message
         return data -> List.of(data, data);
     }
 

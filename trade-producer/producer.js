@@ -21,7 +21,7 @@ const produce = async () => {
     
     await producer.connect()
     let index = 0
-    while(true) {
+    setInterval(async () => {
         const randomTradeIndex = Math.floor(Math.random() * (trade_data.length))
         const trade = trade_data[randomTradeIndex]
 
@@ -36,7 +36,7 @@ const produce = async () => {
         })
         index++;
         console.log(index)
-    }
+    }, 30)
 }
 
 module.exports = produce
