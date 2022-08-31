@@ -1,16 +1,14 @@
 package com.robdev.tradeprocessor.util;
 
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-public class CommonUtil {
+public class CommonUtils {
 
     public static <T> T resultOrExcept(Supplier<T> risky) {
         try {
             return risky.get();
         } catch (Exception ex) {
-//            throw new RuntimeException(ex);
-            return null;
+            throw new RuntimeException(ex);
         }
     }
 }
