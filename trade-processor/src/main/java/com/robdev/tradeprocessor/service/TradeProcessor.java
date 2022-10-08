@@ -32,10 +32,8 @@ public class TradeProcessor implements ApplicationListener<ApplicationReadyEvent
         Flux<ConsumerRecord<String, String>> kafkaFlux = kafkaReceiver.receiveAtmostOnce();
 
         Flux<Trade> enrichmentFlux = kafkaFlux
-                .map(mapToTrade())
-                .map(composedTradeEnrichmentFunctions)
+                .map(COMPOSED_TRADE_ENRICHMENT_FUNCTIONS)
                 .flatMapIterable(s -> s)
-                .log()
                 .doOnError(err -> log.error("Enrichment Error: {}", err.getMessage()));
 
         Flux<SenderResult<Integer>> senderFlux = kafkaSender.send(enrichmentFlux

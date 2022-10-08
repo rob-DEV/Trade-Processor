@@ -2,14 +2,15 @@ package com.robdev.tradeprocessor.enrichment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Slf4j
+@FieldDefaults(makeFinal = true)
 public class TradeEnrichmentFunctions {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -34,20 +35,19 @@ public class TradeEnrichmentFunctions {
         };
     }
 
-    public static Function<Trade, Trade> enrichTradingInstrumentFromUnderlyingSource() {
-        return trade -> {
-            log.info("THREAD ID {}", Thread.currentThread().getId());
-            trade.setTradeID((int) Thread.currentThread().getId());
-            return trade;
+    public static Function<Trade, Trade> enrichTradeId() {
+        return data -> {
+            data.setTradeID(12345678);
+            return data;
         };
     }
 
-    public static Function<Trade, List<Trade>> splitTradesToFlux() {
-        // Copy the message
+    public static Function<Trade, List<Trade>> copyTrade() {
         return data -> List.of(data, data);
     }
 
-    public static Function<Trade, List<Trade>> composedTradeEnrichmentFunctions =
-            enrichTradingInstrumentFromUnderlyingSource()
-                    .andThen(splitTradesToFlux());
+    public static Function<ConsumerRecord<String, String>, List<Trade>> COMPOSED_TRADE_ENRICHMENT_FUNCTIONS =
+            mapToTrade()
+                    .andThen(enrichTradeId())
+                    .andThen(copyTrade());
 }
