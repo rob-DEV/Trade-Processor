@@ -20,7 +20,13 @@ import reactor.kafka.sender.SenderResult;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
+
+import static com.robdev.tradeprocessor.enrichment.TradeEnrichmentFunctions.COMPOSED_TRADE_ENRICHMENT_FUNCTIONS;
+import static com.robdev.tradeprocessor.enrichment.TradeEnrichmentFunctions.mapToTrade;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -37,7 +43,9 @@ public class TradeProcessor {
     public void connect() {
         disposables.add(
                 receive()
-                        .doOnError(error -> log.info( "Error in Kafka Receiver flow", error))
+                        .elapsed()
+                        .doOnNext(it -> log.info( "Time taken: " + it.getT1() + " MS"))
+                        .doOnError(error -> log.info("Error in Kafka Receiver flow", error))
                         .subscribe(s -> log.info("Ended subscription to Kafka Receiver"))
         );
     }
@@ -54,12 +62,17 @@ public class TradeProcessor {
     }
 
     public Flux<SenderResult<UUID>> process(ReceiverRecord<String, String> record) {
+        var s = Optional.of(record)
+                .map(COMPOSED_TRADE_ENRICHMENT_FUNCTIONS)
+                .get();
+
+
         var senderRecord = SenderRecord.create(
                 new ProducerRecord<>(
-                        kafkaProperties.getOutboundTopic(),
+                        kafkaProperties.outboundTopic(),
                         null,
                         record.key(),
-                        record.value(),
+                        s.toString(),
                         null
                 ),
                 UUID.randomUUID()

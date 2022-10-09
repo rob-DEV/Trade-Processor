@@ -1,7 +1,9 @@
 package com.robdev.tradeprocessor.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reactor.kafka.receiver.KafkaReceiver;
@@ -18,25 +20,20 @@ import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_
 
 @Slf4j
 @Configuration
+@EnableConfigurationProperties(KafkaProperties.class)
 public class KafkaConfiguration {
-
-    @Bean
-    @ConfigurationProperties(prefix = "kafka")
-    public KafkaProperties kafkaProperties() {
-        return new KafkaProperties();
-    }
 
     @Bean
     public KafkaReceiver<String, String> kafkaReceiver(KafkaProperties kafkaProperties) {
         final Map<String, Object> consumerProps = Map.of(
-                KEY_DESERIALIZER_CLASS_CONFIG, kafkaProperties.getKeyDeserializer(),
-                VALUE_DESERIALIZER_CLASS_CONFIG, kafkaProperties.getValueDeserializer(),
-                GROUP_ID_CONFIG, kafkaProperties.getConsumerGroup(),
-                BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers()
+                KEY_DESERIALIZER_CLASS_CONFIG, kafkaProperties.keyDeserializer(),
+                VALUE_DESERIALIZER_CLASS_CONFIG, kafkaProperties.valueDeserializer(),
+                GROUP_ID_CONFIG, kafkaProperties.consumerGroup(),
+                BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.bootstrapServers()
         );
 
         ReceiverOptions<String, String> consumerOptions = ReceiverOptions.<String, String>create(consumerProps)
-                .subscription(List.of(kafkaProperties.getInboundTopic()))
+                .subscription(List.of(kafkaProperties.inboundTopic()))
                 .addAssignListener(partitions -> log.debug("onPartitionsAssigned {}", partitions))
                 .addRevokeListener(partitions -> log.debug("onPartitionsRevoked {}", partitions));
 
@@ -46,9 +43,9 @@ public class KafkaConfiguration {
     @Bean
     public KafkaSender<String, String> kafkaSender(KafkaProperties kafkaProperties) {
         final Map<String, Object> producerProps = Map.of(
-                KEY_SERIALIZER_CLASS_CONFIG, kafkaProperties.getKeySerializer(),
-                VALUE_SERIALIZER_CLASS_CONFIG, kafkaProperties.getValueSerializer(),
-                BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers()
+                KEY_SERIALIZER_CLASS_CONFIG, kafkaProperties.keySerializer(),
+                VALUE_SERIALIZER_CLASS_CONFIG, kafkaProperties.valueSerializer(),
+                BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.bootstrapServers()
         );
 
         SenderOptions<String, String> senderOptions = SenderOptions.create(producerProps);

@@ -1,20 +1,16 @@
 package com.robdev.tradeprocessor.config;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@Getter
-@Setter
-public class KafkaProperties {
-
-    private String bootstrapServers;
-    private String consumerGroup;
-    private String inboundTopic;
-    private String outboundTopic;
-    private String keySerializer;
-    private String valueSerializer;
-    private String keyDeserializer;
-    private String valueDeserializer;
+@ConfigurationProperties("kafka")
+public record KafkaProperties(String bootstrapServers,
+    String consumerGroup,
+    String inboundTopic,
+    String outboundTopic,
+    String keySerializer,
+    String valueSerializer,
+    String keyDeserializer,
+    String valueDeserializer) {
 
 }
 

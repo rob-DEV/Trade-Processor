@@ -14,7 +14,7 @@
 	<name>Trade Processor</name>
 	<description>A Web Flux processor exploring new technologies inspired by projects at CME Group.</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<testcontainers.version>1.17.3</testcontainers.version>
 	</properties>
 	<dependencies>
